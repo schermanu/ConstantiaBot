@@ -8,7 +8,6 @@ import poll
 import os
 import constants as CST
 
-
 bot = theBot.TheBot()
 
 embedDescription = "Préviens de ta présence à l'entraînement : \n" \
@@ -18,20 +17,25 @@ embedDescription = "Préviens de ta présence à l'entraînement : \n" \
                    "❔ si tu sais pas encore"
 reactions = ["✅", "☑", "❌", "❔"]
 
-embedDescriptionMondayPoll = "L'entraînement du lundi a toujours lieu, quelque soit le nombre d'inscrits, " \
-                   "le vote est donc facultatif: \n" \
-                   "✅ si tu viens\n" \
-                   "❌ si tu viens pas"
-reactionsMondayPoll = ["✅", "❌"]
+# embedDescriptionMondayPoll = "L'entraînement du lundi a toujours lieu, quelque soit le nombre d'inscrits, " \
+#                    "le vote est donc facultatif: \n" \
+#                    "✅ si tu viens\n" \
+#                    "❌ si tu viens pas"
+# reactionsMondayPoll = ["✅", "❌"]
 
 
 threadMsgStr = "**Fil de discussion dédié à cet entraînement**"
-#threadMsgStr = f"<@&{CST.LICENCIE_ROLE_ID}>\n**Fil de discussion dédié à cet entraînement**"
+# threadMsgStr = f"<@&{CST.LICENCIE_ROLE_ID}>\n**Fil de discussion dédié à cet entraînement**"
+
+# mondayPollRoutine = \
+#     poll.TrainingPollRoutine("monday_training_poll",
+#                              "Monday training poll", bot,
+#                              poll.TrainingPollMsgBuilder(0, embedDescriptionMondayPoll, reactionsMondayPoll, 0x31B404, threadMsgStr), "lu")
 
 mondayPollRoutine = \
     poll.TrainingPollRoutine("monday_training_poll",
                              "Monday training poll", bot,
-                             poll.TrainingPollMsgBuilder(0, embedDescriptionMondayPoll, reactionsMondayPoll, 0x31B404, threadMsgStr), "lu")
+                             poll.TrainingPollMsgBuilder(0, embedDescription, reactions, 0x31B404, threadMsgStr), "lu")
 
 wednesdayPollRoutine = \
     poll.TrainingPollRoutine("wednesday_training_poll",
