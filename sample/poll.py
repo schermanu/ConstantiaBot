@@ -4,7 +4,6 @@ import datetime
 import constants as CST
 
 
-
 # Builder of an embed that will serve as a poll for a given training.
 class TrainingPollMsgBuilder:
 
@@ -18,8 +17,11 @@ class TrainingPollMsgBuilder:
         self.threadMsgStr = threadMsgStr
 
     async def build(self, channel):
-        # Calculate the date of the next training, for which to send the poll.
-        trainingDate = get_date_from_weekday(self.trainingDayNum)
+        # Calculate the date of the next training, for which to send the poll. refDate is tomorrow, in order to send the
+        # poll net for next week if trainingDayNum correspond to today's weekNum. For ex.: if today is saturday,
+        # the poll for the saturday's training will correspond to next week
+        refDate = datetime.datetime.now(tz=CST.USER_TIMEZONE) + datetime.timedelta(days=1)
+        trainingDate = get_date_from_weekday(self.trainingDayNum, refDate=refDate)
         trainingDateStr = \
             babel.dates.format_date(trainingDate, format='EEEE d MMMM', locale='fr_FR').capitalize()
 
@@ -31,8 +33,7 @@ class TrainingPollMsgBuilder:
                 await msg.add_reaction(reaction)
 
         f = await msg.create_thread(name=trainingDateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
-        #await f.send(self.threadMsgStr)
-
+        # await f.send(self.threadMsgStr)
 
 
 # Routine that sends a poll for a training on a given channel, on a given day of the week.
@@ -106,8 +107,6 @@ class TrainingPollRoutine:
                 self.lastExecutionDate = datetime.datetime.now(tz=CST.USER_TIMEZONE)
                 del self.bot.canceledTrainings[canceled_training]
                 await self.bot.save_state()
-
-
 
     def log(self, msg):
         print(f"\t[routine \"{self.displayName}\"] {msg}")
