@@ -1,5 +1,5 @@
 import asyncio
-
+import ast
 import discord
 from discord.ext import commands
 from discord.commands import Option, SlashCommandGroup
@@ -250,13 +250,55 @@ class Interactions(commands.Cog):
         for msg in await ctx.bot.get_channel(CST.TEST_CHANNEL_ID).history().flatten():
             await msg.delete()
 
-    # @commands.command(name='embed', brief="Create an embed")
-    # async def embed(self, ctx: commands.Context):
-    #     # respond = await ctx.respond("working...")
-    #     msgs = await ctx.channel.history(limit=2).flatten()
-    #     last_msg = msgs[1]
-    #     embed = discord.Embed(title=f"posté par {ctx.message.author.nick}", description=last_msg.content)
-    #     await ctx.send(embed=embed)
+    @commands.command(name='embed_from_dict', brief="Create an embed from a python dictionary. Need to respond to a "
+                                                    "message")
+    async def embed_from_dict(self, ctx: commands.Context, channel_id_str: str = None):
+        # respond = await ctx.respond("working...")
+        channel = None
+        if channel_id_str is None:
+            channel = ctx.channel
+        else:
+            try:
+                if not channel_id_str.isdigit():
+                    channel_id_str = channel_id_str.replace('<', '').replace('>', '').replace('#', '')
+                channel_id = int(channel_id_str)
+                channel = ctx.bot.get_channel(channel_id)
+            except:
+                await ctx.send("❌ error with channel reference ")
+        if ctx.message.reference is None:
+            await ctx.send("❌ need to respond to a message ")
+        else:
+            msg = await ctx.fetch_message(ctx.message.reference.resolved.id)
+            content = msg.content
+            try:
+                dico = ast.literal_eval(content)
+                embed = discord.Embed.from_dict(data=dico)
+                try:
+                    if channel:
+                        await channel.send(embed=embed)
+                except:
+                    await ctx.send("❌ didn't find the channel")
+            except:
+                await ctx.send("❌ syntax error\nFormat should be:\n "
+                               "`{ 'color': 2466394, 'type': 'rich',\n"
+                               "'title':'...',\n"
+                               "'description': '...',\n"
+                               "'fields': [{'name': '...', 'value': '...', 'inline': False},{'name': '...', 'value': "
+                               "'[hyperlien](https://google.fr)', 'inline': False}] "
+                               "\n}`")
+
+    @commands.command(name='embed_to_dict', brief="give the python dictionary that can create this embed. Need to "
+                                                  "respond to a message")
+    async def embed_to_dict(self, ctx: commands.Context):
+        if ctx.message.reference is None:
+            await ctx.send("❌ need to respond to a message ")
+        else:
+            msg = await ctx.fetch_message(ctx.message.reference.resolved.id)
+            if msg.embeds==[]:
+                await ctx.send("❌ no embed found")
+            else:
+                embeddict = discord.Embed.to_dict(msg.embeds[0])
+                await ctx.send(embeddict)
 
 
 def setup(bot):
