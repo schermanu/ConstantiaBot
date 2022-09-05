@@ -284,7 +284,7 @@ class Interactions(commands.Cog):
                                "'title':'...',\n"
                                "'description': '...',\n"
                                "'fields': [{'name': '...', 'value': '...', 'inline': False},{'name': '...', 'value': "
-                               "'[hyperlien](https://google.fr)', 'inline': False}] "
+                               "'[hyperlink](https://google.fr)', 'inline': False}] "
                                "\n}`")
 
     @commands.command(name='embed_to_dict', brief="give the python dictionary that can create this embed. Need to "
