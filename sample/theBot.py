@@ -145,12 +145,13 @@ class TheBot(commands.Bot):
             for channel in guild.channels:
                 if channel.type.name == 'text':
                     for thread in channel.threads:
-                        try:
-                            if not thread.archived:
-                                await thread.edit(auto_archive_duration=60)
-                                await thread.edit(auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
-                        except:
-                            pass
+                        if thread.auto_archive_duration != 60:
+                            try:
+                                if not thread.archived:
+                                    await thread.edit(auto_archive_duration=60)
+                                    await thread.edit(auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
+                            except:
+                                pass
 
 
     # this version of the function reset the thread timers for threads in self.noArchivingChannels and self.protectedThreads.
