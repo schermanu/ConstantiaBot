@@ -68,7 +68,7 @@ class TheBot(commands.Bot):
                 await self.run_routines_once()
 
         await self.restart_routines_task()
-        await self.reset_archiving_timer()
+        # await self.reset_archiving_timer()
 
     # ----------poll routine functions-------------
 
@@ -132,7 +132,7 @@ class TheBot(commands.Bot):
         for routine in self.routines:
             await routine.execute()
 
-        await self.reset_archiving_timer()
+        # await self.reset_archiving_timer()
         await self.save_state()
 
     def log(self, msg):
