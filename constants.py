@@ -20,7 +20,7 @@ TEST_CHANNEL_ID = 926902411501645884
 MAX_SLEEP_DURATION = 3600
 # Time zone to use when receiving dates from the user, or displaying them to him.
 
-MAX_THREAD_ARCHIVING_DURATION = 60 * 24 # should be 1h, 1 day, 3 days if boosted lvl1, 7days if lvl2
+MAX_THREAD_ARCHIVING_DURATION = 60 * 24 * 7 # should be 1h, 1 day, 3 days if boosted lvl1, 7days if lvl2
 
 USER_TIMEZONE = tz.gettz('Europe/Paris')
 
