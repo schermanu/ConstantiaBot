@@ -21,7 +21,7 @@ embedDescriptionPoll = "Préviens de ta présence à l'entraînement : \n" \
 reactionsPoll = ["✅", "☑", "❌", "❔"]
 
 ## ---- sans sondages ---
-embedDescription = "Fini les sondages ! \nLes entraînement auront toujours lieu :1f94f: "
+embedDescription = "Fini les sondages ! \nLes entraînement auront toujours lieu 🤗 "
 reactions = []
 
 # embedDescriptionMondayPoll = "L'entraînement du lundi a toujours lieu, quelque soit le nombre d'inscrits, " \
