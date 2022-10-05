@@ -175,7 +175,6 @@ def poll_events(bot):
         if not user == bot.user:
             channel = await bot.fetch_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
-
             emoji = payload.emoji
             if payload.channel_id == CST.TEST_CHANNEL_ID: #CST.TRAINING_POLLS_CHANNEL_ID:
                 try:
