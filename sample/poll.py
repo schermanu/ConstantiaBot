@@ -178,12 +178,36 @@ def poll_events(bot):
             emoji = payload.emoji
             if payload.channel_id == CST.TRAINING_POLLS_CHANNEL_ID:
                 try:
-                    thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
+                    thread = await bot.fetch_channel(
+                        payload.message_id)  # thread.id == message_id if thread starts from this message
                     mention_msg = await thread.send(user.mention)
                     await mention_msg.delete()
-                    trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
+
                     member = await channel.guild.fetch_member(payload.user_id)
-                    msg = await trackingChannel.send(f"{thread.name} voté par {member.nick}")
+
+                    await addToLog(bot, thread.name, member, emoji)
+
                     await message.remove_reaction(emoji, user)
                 except:
                     pass
+        return
+
+
+async def addToLog(bot, dateStr, member, emoji):
+    trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
+    allMsg = await bot.get_channel(CST.TRACKING_CHANNEL_ID).history().flatten()
+    message = None
+    for msg in allMsg[0:6]:
+        if msg.content == dateStr:
+            message = msg
+            break
+    if message is None:
+        message = await trackingChannel.send(dateStr)
+        await message.create_thread(name=dateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
+    thread = await bot.fetch_channel(message.id)
+    if member.nick is None:
+        name = member.name
+    else:
+        name = member.nick
+    await thread.send(f"{emoji} voté par **{name}**")
+    return
