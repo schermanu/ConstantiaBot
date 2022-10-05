@@ -171,15 +171,17 @@ def format_datetime(dateTime, placeholder='never', format='%d/%m/%Y, %H:%M:%S'):
 def poll_events(bot):
     @bot.event
     async def on_raw_reaction_add(payload):
-        channel = await bot.fetch_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
         user = await bot.fetch_user(payload.user_id)
-        emoji = payload.emoji
-        if payload.channel_id == CST.TRAINING_POLLS_CHANNEL_ID:
-            try:
-                thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
-                mention_msg = await thread.send(f"<@{payload.user_id}>")
-                await mention_msg.delete()
-                await message.remove_reaction(emoji, user)
-            except:
-                pass
+        if not user == bot.user:
+            channel = await bot.fetch_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id)
+
+            emoji = payload.emoji
+            if payload.channel_id == CST.TEST_CHANNEL_ID: #CST.TRAINING_POLLS_CHANNEL_ID:
+                try:
+                    thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
+                    mention_msg = await thread.send(user.mention)
+                    await mention_msg.delete()
+                    await message.remove_reaction(emoji, user)
+                except:
+                    pass
