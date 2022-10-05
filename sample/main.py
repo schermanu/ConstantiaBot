@@ -10,19 +10,22 @@ import constants as CST
 
 bot = theBot.TheBot()
 
-
-
 ## --- sondages ---
-embedDescriptionPoll = "Préviens de ta présence à l'entraînement : \n" \
-                   "✅ si tu viens\n" \
-                   "☑️ que si on est assez pour des matchs\n" \
-                   "❌ si tu viens pas\n" \
-                   "❔ si tu sais pas encore"
-reactionsPoll = ["✅", "☑", "❌", "❔"]
+embedDescription = "Les entraînement auront toujours lieu 🤗\n" \
+                   "mais préviens quand même si tu viens (✅)\n" \
+                   "ça pourra être utile aux coachs \n" \
+                   "et tu rejoindras aussi le fil de l'entraînement"
+reactions = ["✅"]
+# embedDescriptionPoll = "Préviens de ta présence à l'entraînement : \n" \
+#                    "✅ si tu viens\n" \
+#                    "☑️ que si on est assez pour des matchs\n" \
+#                    "❌ si tu viens pas\n" \
+#                    "❔ si tu sais pas encore"
+# reactionsPoll = ["✅", "☑", "❌", "❔"]
 
 ## ---- sans sondages ---
-embedDescription = "Fini les sondages ! \nLes entraînement auront toujours lieu 🤗 "
-reactions = []
+embedDescriptionNoPoll = "Fini les sondages ! \nLes entraînement auront toujours lieu 🤗 "
+reactionsNoPoll = []
 
 # embedDescriptionMondayPoll = "L'entraînement du lundi a toujours lieu, quelque soit le nombre d'inscrits, " \
 #                    "le vote est donc facultatif: \n" \

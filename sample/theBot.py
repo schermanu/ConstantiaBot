@@ -8,6 +8,8 @@ import json
 import discord
 from discord.ext import commands
 import constants as CST
+from poll import poll_events
+from functionnalities import roleonjoin
 
 
 # The bot that receives all commands.
@@ -27,6 +29,7 @@ class TheBot(commands.Bot):
         self.routinesTriggerTime = datetime.time()
         self.lastRoutinesTriggerDate = None
         self.load_commands()
+        poll_events(self)
 
     def load_commands(self):
 

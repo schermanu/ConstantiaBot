@@ -25,7 +25,7 @@ class TrainingPollMsgBuilder:
         trainingDateStr = \
             babel.dates.format_date(trainingDate, format='EEEE d MMMM', locale='fr_FR').capitalize()
 
-        embed = discord.Embed(title=f"! {trainingDateStr} !", description=self.description, color=self.color)
+        embed = discord.Embed(title=f"{trainingDateStr}", description=self.description, color=self.color)
 
         msg = await channel.send(embed=embed)
         if self.reactions is not None:
@@ -166,3 +166,20 @@ def format_weekday_num(weekDayNum, format='EEEE', refDate=None):
 
 def format_datetime(dateTime, placeholder='never', format='%d/%m/%Y, %H:%M:%S'):
     return placeholder if dateTime is None else dateTime.strftime(format)
+
+
+def poll_events(bot):
+    @bot.event
+    async def on_raw_reaction_add(payload):
+        channel = await bot.fetch_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        user = await bot.fetch_user(payload.user_id)
+        emoji = payload.emoji
+        if payload.channel_id == CST.TRAINING_POLLS_CHANNEL_ID:
+            try:
+                thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
+                mention_msg = await thread.send(f"<@{payload.user_id}>")
+                await mention_msg.delete()
+                await message.remove_reaction(emoji, user)
+            except:
+                pass
