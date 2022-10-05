@@ -181,6 +181,9 @@ def poll_events(bot):
                     thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
                     mention_msg = await thread.send(user.mention)
                     await mention_msg.delete()
+                    trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
+                    member = await channel.guild.fetch_member(payload.user_id)
+                    msg = await trackingChannel.send(f"{thread.name} voté par {member.nick}")
                     await message.remove_reaction(emoji, user)
                 except:
                     pass

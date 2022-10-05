@@ -11,6 +11,9 @@ TRAINING_POLLS_CHANNEL_ID = 913522652239519775
 # Identifier of the Discord channel dedicated to tests.
 TEST_CHANNEL_ID = 926902411501645884
 
+# Pour le suivit des votes des sondages des entrainements
+TRACKING_CHANNEL_ID = 1027221460982452265
+
 # LICENCIE_ROLE_ID = 898137491780014090
 
 # Maximum duration of any sleep (in seconds).
