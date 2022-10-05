@@ -176,7 +176,7 @@ def poll_events(bot):
             channel = await bot.fetch_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
             emoji = payload.emoji
-            if payload.channel_id == CST.TEST_CHANNEL_ID: #CST.TRAINING_POLLS_CHANNEL_ID:
+            if payload.channel_id == CST.TRAINING_POLLS_CHANNEL_ID:
                 try:
                     thread = await bot.fetch_channel(payload.message_id) #thread.id == message_id if thread starts from this message
                     mention_msg = await thread.send(user.mention)
