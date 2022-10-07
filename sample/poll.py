@@ -213,7 +213,6 @@ def poll_events(bot):
 
 
 async def addToLog(bot, dateStr, member, emoji):
-
     thread = await findOrCreateTrackingThread(bot, dateStr)
     pollData = PollData()
     await pollData.init(thread)
@@ -234,7 +233,6 @@ async def addToLog(bot, dateStr, member, emoji):
 
 
 async def findOrCreateTrackingThread(bot, dateStr):
-
     trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
     allMsg = await bot.get_channel(CST.TRACKING_CHANNEL_ID).history().flatten()
     message = None
@@ -245,7 +243,7 @@ async def findOrCreateTrackingThread(bot, dateStr):
     if message is None:
         message = await trackingChannel.send(dateStr)
         new_thread = await message.create_thread(name=dateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
-        pollData = PollData()# to create a new pollData message
+        pollData = PollData()  # to create a new pollData message
         await pollData.init(new_thread)
     thread = await bot.fetch_channel(message.id)
     return thread
@@ -307,4 +305,3 @@ class PollData:
 
     async def __writeData(self):
         await self.message.edit(self.data)
-
