@@ -192,20 +192,23 @@ def poll_events(bot):
 
     @bot.event
     async def on_message(message: discord.Message):
-        if not message.author == bot.user:
-            if message.channel.type.name == 'public_thread':
-                if message.channel.parent_id == CST.TRAINING_POLLS_CHANNEL_ID:
-                    thread = message.channel
-                    dateStr = thread.name
-                    trackingThread = await findOrCreateTrackingThread(bot, dateStr)
-                    pollData = PollData()
-                    await pollData.init(trackingThread)
-                    ids_to_add = await pollData.getIdsToAdd()
-                    for member_id in ids_to_add:
-                        member = await message.channel.guild.fetch_member(member_id)
-                        mention_msg = await thread.send(member.mention)
-                        await mention_msg.delete()
-                    await pollData.clearListToAdd()
+        if message.author == bot.user:
+            return
+
+        if message.channel.type.name == 'public_thread':
+            if message.channel.parent_id == CST.TRAINING_POLLS_CHANNEL_ID:
+                thread = message.channel
+                dateStr = thread.name
+                trackingThread = await findOrCreateTrackingThread(bot, dateStr)
+                pollData = PollData()
+                await pollData.init(trackingThread)
+                ids_to_add = await pollData.getIdsToAdd()
+                for member_id in ids_to_add:
+                    member = await message.channel.guild.fetch_member(member_id)
+                    mention_msg = await thread.send(member.mention)
+                    await mention_msg.delete()
+                await pollData.clearListToAdd()
+        await bot.process_commands(message)
         return
 
 
