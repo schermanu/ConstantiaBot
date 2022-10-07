@@ -1,4 +1,5 @@
 import babel.dates
+import ast
 import discord
 import datetime
 import constants as CST
@@ -33,7 +34,7 @@ class TrainingPollMsgBuilder:
                 await msg.add_reaction(reaction)
 
         f = await msg.create_thread(name=trainingDateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
-        # await f.send(self.threadMsgStr)
+        await f.send(self.threadMsgStr)
 
 
 # Routine that sends a poll for a training on a given channel, on a given day of the week.
@@ -177,37 +178,130 @@ def poll_events(bot):
             message = await channel.fetch_message(payload.message_id)
             emoji = payload.emoji
             if payload.channel_id == CST.TRAINING_POLLS_CHANNEL_ID:
-                try:
-                    thread = await bot.fetch_channel(
-                        payload.message_id)  # thread.id == message_id if thread starts from this message
-                    mention_msg = await thread.send(user.mention)
-                    await mention_msg.delete()
+                # try:
+                thread = await bot.fetch_channel(
+                    payload.message_id)  # thread.id == message_id if thread starts from this message
+                # mention_msg = await thread.send(user.mention)
+                # await mention_msg.delete()
+                member = await channel.guild.fetch_member(payload.user_id)
+                await addToLog(bot, thread.name, member, emoji)
+                await message.remove_reaction(emoji, user)
+            # except:
+            #     pass
+        return
 
-                    member = await channel.guild.fetch_member(payload.user_id)
-
-                    await addToLog(bot, thread.name, member, emoji)
-
-                    await message.remove_reaction(emoji, user)
-                except:
-                    pass
+    @bot.event
+    async def on_message(message: discord.Message):
+        if not message.author == bot.user:
+            if message.channel.type.name == 'public_thread':
+                if message.channel.parent_id == CST.TRAINING_POLLS_CHANNEL_ID:
+                    thread = message.channel
+                    dateStr = thread.name
+                    trackingThread = await findOrCreateTrackingThread(bot, dateStr)
+                    pollData = PollData()
+                    await pollData.init(trackingThread)
+                    ids_to_add = await pollData.getIdsToAdd()
+                    for member_id in ids_to_add:
+                        member = await message.channel.guild.fetch_member(member_id)
+                        mention_msg = await thread.send(member.mention)
+                        await mention_msg.delete()
+                    await pollData.clearListToAdd()
         return
 
 
 async def addToLog(bot, dateStr, member, emoji):
-    trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
-    allMsg = await bot.get_channel(CST.TRACKING_CHANNEL_ID).history().flatten()
-    message = None
-    for msg in allMsg[0:6]:
-        if msg.content == dateStr:
-            message = msg
-            break
-    if message is None:
-        message = await trackingChannel.send(dateStr)
-        await message.create_thread(name=dateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
-    thread = await bot.fetch_channel(message.id)
+
+    thread = await findOrCreateTrackingThread(bot, dateStr)
+    pollData = PollData()
+    await pollData.init(thread)
+    if emoji.name == "❌":
+        await pollData.deleteMemberToWaitingList(member)
+        await pollData.deleteMemberToList(member)
+    else:
+        await pollData.addMemberToWaitingList(member)
+        await pollData.addMemberToList(member)
     if member.nick is None:
         name = member.name
     else:
         name = member.nick
     await thread.send(f"{emoji} voté par **{name}**")
+    count = len(pollData.data["list_of_users"])
+    await thread.send(f"total: {count} personnes")
     return
+
+
+async def findOrCreateTrackingThread(bot, dateStr):
+
+    trackingChannel = await bot.fetch_channel(CST.TRACKING_CHANNEL_ID)
+    allMsg = await bot.get_channel(CST.TRACKING_CHANNEL_ID).history().flatten()
+    message = None
+    for msg in allMsg[0:10]:
+        if msg.content == dateStr:
+            message = msg
+            break
+    if message is None:
+        message = await trackingChannel.send(dateStr)
+        new_thread = await message.create_thread(name=dateStr, auto_archive_duration=CST.MAX_THREAD_ARCHIVING_DURATION)
+        pollData = PollData()# to create a new pollData message
+        await pollData.init(new_thread)
+    thread = await bot.fetch_channel(message.id)
+    return thread
+
+
+class PollData:
+
+    def __init__(self):
+        self.data = None
+        self.message = None
+
+    async def init(self, trackingThread):
+        self.message, self.data = await self.__findOrCreateMsg(trackingThread)
+
+    async def __findOrCreateMsg(self, thread):
+        allMsg = await thread.history().flatten()
+        message = None
+        if allMsg is None:
+            pass
+        else:
+            for msg in reversed(allMsg):  # reversed to start with first posted message
+                if msg.content.startswith("{"):
+                    message = msg
+                    break
+        if message is None:
+            message = await thread.send({"user_ids_to_add": [], "list_of_users": []})
+        data = ast.literal_eval(message.content)
+        return message, data
+
+    async def getMemberList(self):
+        return self.data["list_of_users"]
+
+    async def getIdsToAdd(self):
+        return self.data["user_ids_to_add"]
+
+    async def addMemberToList(self, member):
+        if not (member.id in self.data["list_of_users"]):
+            self.data["list_of_users"].append(member.id)
+            await self.__writeData()
+
+    async def addMemberToWaitingList(self, member):
+        if not (member.id in self.data["list_of_users"]):
+            self.data["user_ids_to_add"].append(member.id)
+            await self.__writeData()
+
+    async def deleteMemberToList(self, member):
+        if (member.id in self.data["list_of_users"]):
+            self.data["list_of_users"].remove(member.id)
+            await self.__writeData()
+
+    async def deleteMemberToWaitingList(self, member):
+        if (member.id in self.data["user_ids_to_add"]):
+            self.data["user_ids_to_add"].remove(member.id)
+            await self.__writeData()
+
+    async def clearListToAdd(self):
+        self.data["user_ids_to_add"].clear()
+        await self.__writeData()
+
+    async def __writeData(self):
+        await self.message.edit(self.data)
+

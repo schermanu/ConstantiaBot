@@ -14,8 +14,9 @@ bot = theBot.TheBot()
 embedDescription = "Les entraînement auront toujours lieu 🤗\n" \
                    "mais préviens quand même si tu viens (✅)\n" \
                    "ça pourra être utile aux coachs \n" \
-                   "et tu rejoindras aussi le fil de l'entraînement"
-reactions = ["✅"]
+                   "et tu rejoindras aussi le fil de l'entraînement\n"\
+                    "(tu peux annuler ta présence avec ❌ )"
+reactions = ["✅", "❌"]
 # embedDescriptionPoll = "Préviens de ta présence à l'entraînement : \n" \
 #                    "✅ si tu viens\n" \
 #                    "☑️ que si on est assez pour des matchs\n" \
@@ -34,7 +35,7 @@ reactionsNoPoll = []
 # reactionsMondayPoll = ["✅", "❌"]
 
 
-threadMsgStr = "**Fil de discussion dédié à cet entraînement**"
+threadMsgStr = "**la mention @ here permet d'envoyer une notification à toute personne ayant confirmé sa présence à cet entraînement**"
 # threadMsgStr = f"<@&{CST.LICENCIE_ROLE_ID}>\n**Fil de discussion dédié à cet entraînement**"
 
 # mondayPollRoutine = \
