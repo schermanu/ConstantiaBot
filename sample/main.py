@@ -35,7 +35,7 @@ reactionsNoPoll = []
 # reactionsMondayPoll = ["✅", "❌"]
 
 
-threadMsgStr = "**la mention @ here permet d'envoyer une notification à toute personne ayant confirmé sa présence à cet entraînement**"
+threadMsgStr = "**Utilise la mention @here** pour envoyer une notification à toute personne ayant confirmé sa présence à cet entraînement"
 # threadMsgStr = f"<@&{CST.LICENCIE_ROLE_ID}>\n**Fil de discussion dédié à cet entraînement**"
 
 # mondayPollRoutine = \
